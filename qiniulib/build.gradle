@@ -1,0 +1,49 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release' // must be applied after your artifact generating plugin (eg. java / com.android.library)
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.novoda:bintray-release:0.9.1'
+    }
+}
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+    }
+
+    buildTypes {
+        release {
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+    }
+}
+
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    /*********** Support-Lib **********/
+
+    //noinspection GradleDynamicVersion
+    implementation 'com.qiniu:qiniu-android-sdk:8.1.+'
+    //noinspection GradleDynamicVersion
+    implementation 'com.qiniu:qiniu-java-sdk:7.4.+'
+
+
+}
+
+publish {
+    userOrg = rootProject.ext.userOrg
+    groupId = rootProject.ext.groupId
+    artifactId = rootProject.ext.artifactId
+    publishVersion = rootProject.ext.publishVersion
+    desc = rootProject.ext.desc
+    website = rootProject.ext.website
+}
