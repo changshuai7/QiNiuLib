@@ -101,17 +101,19 @@ QiNiuUploadFileHandler task = mUploader.upload("filePath", "key", new QiNiuUploa
 
 如果想在客户端完成生成上传Token、获取下载地址的功能（虽然我们强烈不建议这么做），本库也开放了相关的Api
 
-首选需要在Applicaiton中初始化accessKey和secretKey：
+首先需要在Applicaiton中初始化accessKey和secretKey：
 ```
- QiNiuConfig.init(String accessKey, String secretKey);
+QiNiuConfig.init(String accessKey, String secretKey);
 ```
 
 由此可使用相关的功能：
+
 1、获取上传Token的API：
 ```
 String token = QiNiuAuth.generateUploadToken(String bucket);
 ```
 bucket需要在七牛云申请
+
 
 2、根据key生成私有下载地址的Api：
 ```
