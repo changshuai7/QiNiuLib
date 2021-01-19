@@ -122,3 +122,7 @@ baseUrl为待签名的文件url，形如："http://img.domain.com/u/3.jpg"、"ht
 -ignorewarnings
 
 ```
+## 5、更多
+
+更多请查阅官网开发者文档：https://developer.qiniu.com/kodo/1236/android
+
