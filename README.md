@@ -5,14 +5,7 @@
 本框架基于七牛云SDK,封装了七牛云文件上传的功能。
 
 
-## 一、框架结构
-
-略
-
-
-## 二、集成方式
-
-### 1.引入。
+### 1、集成方式
 
 ```
 dependencies {
@@ -23,7 +16,7 @@ dependencies {
 ```
 
 
-### 2.使用。
+### 2、使用。
 
 1、创建QiNiuUploader
 ```
@@ -84,7 +77,7 @@ QiNiuUploadFileHandler task = mUploader.upload("filePath", "key", new QiNiuUploa
 * upload方法内部具有重试机制，如果上传发生失败，会重试三次（此时每次都会获取最新的上传Token），三次都失败，则回调onError()
 
 
-### 3.高级
+### 3、高级
 
 **说明：**
 
