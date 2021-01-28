@@ -9,9 +9,8 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
-        mainTid = Process.myTid()
-        handler = Handler()
+        INSTANCE = this
+
         initQiNiu()
     }
 
@@ -20,16 +19,7 @@ class MyApplication : Application() {
     }
 
     companion object {
-        //获取单例对象
-        var instance: MyApplication? = null
-            private set
-
-        //获取主线程id
-        var mainTid = 0
-            private set
-
-        //获取Handler
-        var handler: Handler? = null
+        var INSTANCE: MyApplication? = null
             private set
     }
 }

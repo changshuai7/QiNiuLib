@@ -1,14 +1,16 @@
 package com.shuai.qiniulib.example.app
 
 import android.Manifest
-import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Environment
-import android.support.v4.app.FragmentActivity
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.FragmentActivity
 import com.shuai.qiniulib.QiNiuAuth
 
 import com.shuai.qiniulib.QiNiuUploader
@@ -17,8 +19,6 @@ import com.shuai.qiniulib.lib.QiNiuUploadCallback
 import com.shuai.qiniulib.lib.QiNiuUploadFileHandler
 import com.shuai.qiniulib.lib.QiNiuUploadTokenLoader
 import com.shuai.qiniulib.lib.QiNiuUploadTokenLoader.QiNiuUploadTokenResult
-import com.tbruyelle.rxpermissions2.RxPermissions
-import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.util.*
 
@@ -56,21 +56,10 @@ class MainActivity : FragmentActivity(), View.OnClickListener {
 
     }
 
-
-    @SuppressLint("CheckResult")
-    fun initPermissions() {
-        val rxPermissions = RxPermissions(this)
-        rxPermissions.setLogging(true)
+    private fun initPermissions() {
         val arr = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
-        rxPermissions.request(*arr).subscribe {
-            if (it) {
-                Toast.makeText(this, "权限OK", Toast.LENGTH_LONG)
-            } else {
-                Toast.makeText(this, "权限不足", Toast.LENGTH_LONG)
+        ActivityCompat.requestPermissions(this, arr, 100)
 
-
-            }
-        }
     }
 
     private var mUploader: QiNiuUploader? = null
@@ -87,6 +76,7 @@ class MainActivity : FragmentActivity(), View.OnClickListener {
                     }
                 })
                 .build()
+
     }
 
     override fun onClick(v: View) {

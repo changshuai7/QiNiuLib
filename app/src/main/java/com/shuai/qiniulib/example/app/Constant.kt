@@ -6,4 +6,5 @@ object Constant {
     const val secretKey = "";
     const val baseUrl = "";
     const val privateBucket = "";
+
 }
