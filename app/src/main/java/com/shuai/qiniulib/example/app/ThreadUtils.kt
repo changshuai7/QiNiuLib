@@ -1,23 +1,23 @@
-package com.shuai.qiniulib.example.app;
+package com.shuai.qiniulib.example.app
+
+import android.os.Process
 
 /**
  * 和线程相关的工具类
  *
  * @author changshuai
  */
-
-public class ThreadUtils {
-
+object ThreadUtils {
     /**
      * 把Runnable方法提交到主线程执行
      *
      * @param runnable
      */
-    public static void runOnUiThread(Runnable runnable) {
-        if (android.os.Process.myTid() == MyApplication.getMainTid()) {
-            runnable.run();
+    fun runOnUiThread(runnable: Runnable) {
+        if (Process.myTid() == MyApplication.mainTid) {
+            runnable.run()
         } else {
-            MyApplication.getHandler().post(runnable);//运行一个handler
+            MyApplication.handler?.post(runnable) //运行一个handler
         }
     }
 }
