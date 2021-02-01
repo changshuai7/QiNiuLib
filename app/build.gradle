@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    buildToolsVersion "${rootProject.buildToolsVersion}"
+    compileSdkVersion Integer.parseInt("${rootProject.compileSdkVersion}")
 
     defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion Integer.parseInt("${rootProject.minSdkVersion}")
+        targetSdkVersion Integer.parseInt("${rootProject.targetSdkVersion}")
         versionCode 1
         versionName "1.0"
 
@@ -41,24 +42,14 @@ android {
     }
 }
 
-
 dependencies {
-    /*************Base-Lib*************/
-    //Google - V7
-    implementation "com.android.support:appcompat-v7:$rootProject.ext.supportLibraryVersion"
-    //Google - V4
-    implementation "com.android.support:support-v4:$rootProject.ext.supportLibraryVersion"
-    //Google - Design
-    implementation "com.android.support:design:$rootProject.ext.supportLibraryVersion"
 
-    implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation "androidx.appcompat:appcompat:$appcompatVersion"
 
+    implementation "com.android.support:multidex:$multidexVersion"
 
-    //Google - Gson
-    //noinspection GradleDependency
-    implementation 'com.google.code.gson:gson:2.8.2'
-
-    implementation project(':qiniulib')
-//    implementation 'com.shuai:qiniulib:0.0.1'
+    api project(':qiniulib')
+    //implementation 'com.shuai:qiniulib:0.0.1'
 
 }
