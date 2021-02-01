@@ -4,7 +4,7 @@
 
 
     <application
-        android:name="com.shuai.qiniulib.example.app.MyApplication"
+        android:name="com.shuai.qiniulib.example.app.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -15,7 +15,7 @@
         <!-- Android7.0-FileProvider -->
         <provider
 
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="com.shuai.qiniulib.example.app.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
