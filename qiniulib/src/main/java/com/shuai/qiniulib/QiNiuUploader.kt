@@ -1,10 +1,11 @@
 package com.shuai.qiniulib
 
 import com.shuai.qiniulib.lib.*
+import java.lang.RuntimeException
 import java.util.concurrent.Executors
 
 class QiNiuUploader private constructor(
-        val tokenLoader: QiNiuUploadTokenLoader?,
+        val tokenLoader: QiNiuUploadTokenLoader,
         //保存Token，下次无特殊情况，不需要重新通过QiNiuUploadTokenLoader获取(仅存于调用者的内存中)
         @field:Transient var token: String?) {
 
@@ -31,12 +32,26 @@ class QiNiuUploader private constructor(
      * @return
      */
     fun upload(filePath: String?, key: String?, callback: QiNiuUploadCallback?): QiNiuUploadFileHandler {
-        var k = key
+        var mKey: String? = key
         if (QiNiuUtil.isStrNullOrEmpty(key)) {
-            k = QiNiuUtil.getFileName(filePath)
+            mKey = QiNiuUtil.getFileName(filePath)
         }
-        callback?.onStart(k)
-        val task = QiNiuUploadFileTask(filePath, k, this, callback)
+        callback?.onStart(mKey)
+
+        if (!QiNiuUtil.isFileCanRead(filePath)) {
+            callback?.onError(key, QiNiuErrorCode.UPLOAD_CANT_READ_FILE_ERROR.code, QiNiuErrorCode.UPLOAD_CANT_READ_FILE_ERROR.message)
+            return object : QiNiuUploadFileHandler {
+                override fun cancel() {}
+            }
+        }
+        if (QiNiuUtil.isStrNullOrEmpty(mKey)) {
+            callback?.onError(key, QiNiuErrorCode.UPLOAD_FILE_KEY_EMPTY_ERROR.code, QiNiuErrorCode.UPLOAD_FILE_KEY_EMPTY_ERROR.message)
+            return object : QiNiuUploadFileHandler {
+                override fun cancel() {}
+            }
+        }
+        //到此处，filePath、mKey一定不会为空的
+        val task = QiNiuUploadFileTask(filePath as String, mKey as String, this, callback)
         //mUploadFileExecutor.execute(task);
         val submit = mUploadFileExecutor?.submit(task)
         return object : QiNiuUploadFileHandler {
@@ -54,15 +69,20 @@ class QiNiuUploader private constructor(
     /////////////////////////////// Build 用于传递相关配置 ///////////////////////////////
     class Build {
         private var mTokenLoader: QiNiuUploadTokenLoader? = null
-        fun setTokenLoader(mTokenLoader: QiNiuUploadTokenLoader?): Build {
+
+        //设置TokenLoader
+        fun setTokenLoader(mTokenLoader: QiNiuUploadTokenLoader): Build {
             this.mTokenLoader = mTokenLoader
             return this
         }
 
+        //构建QiNiuUploader
         fun build(): QiNiuUploader {
-            return QiNiuUploader(mTokenLoader, null)
+            if (mTokenLoader == null) {
+                throw RuntimeException("QiNiuUploadTokenLoader不可以为空");
+            }
+            return QiNiuUploader(mTokenLoader as QiNiuUploadTokenLoader, null)
         }
     }
-
 
 }

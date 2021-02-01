@@ -1,14 +1,14 @@
 package com.shuai.qiniulib.example.app
 
 import android.app.Application
-import android.os.Handler
-import android.os.Process
+import androidx.multidex.MultiDex
 import com.shuai.qiniulib.QiNiuConfig
 
-class MyApplication : Application() {
+class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        MultiDex.install(this);
         INSTANCE = this
 
         initQiNiu()
@@ -19,7 +19,7 @@ class MyApplication : Application() {
     }
 
     companion object {
-        var INSTANCE: MyApplication? = null
+        var INSTANCE: App? = null
             private set
     }
 }

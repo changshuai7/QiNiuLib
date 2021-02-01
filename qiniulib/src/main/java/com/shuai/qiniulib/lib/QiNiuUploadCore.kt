@@ -13,7 +13,7 @@ class QiNiuUploadCore private constructor() {
     var isUploadCancelled = false // 任务是否已经取消
         private set
 
-    fun upload(filePath: String?, key: String?, token: String?, callback: QiNiuUploadInnerCallback?) {
+    fun upload(filePath: String, key: String, token: String, callback: QiNiuUploadInnerCallback?) {
         QiNiuLog.d("七牛SDK - 开始执行upload")
         //上传进度 配置
         val options = UploadOptions(null, null, true, { k, percent -> callback?.onProgress(k, percent) }) {
@@ -26,21 +26,23 @@ class QiNiuUploadCore private constructor() {
         //上传结束 配置
         val upCompletionHandler = UpCompletionHandler { k, info, jsonData ->
             when {
-                info.isOK -> {
+                info?.isOK == true -> {
                     QiNiuLog.d("七牛SDK - 返回 - isOK")
                     //String fileKey = jsonData.optString("key");
                     //String fileHash = jsonData.optString("hash");
-                    callback?.onComplete(k, jsonData?.toString() ?: "")
+                    callback?.onComplete(k, jsonData?.toString())
                 }
-                info.isCancelled -> {
+                info?.isCancelled == true -> {
                     QiNiuLog.d("七牛SDK - 返回 - isCancelled")
 
                     callback?.onCancel(k, info.statusCode, info.error)
                 }
                 else -> {
                     QiNiuLog.d("七牛SDK - 返回 - isElse")
+                    callback?.onError(k,
+                            info?.statusCode ?: QiNiuErrorCode.OTHER_ERROR.code,
+                            info?.error ?: QiNiuErrorCode.OTHER_ERROR.message)
 
-                    callback?.onError(k, info.statusCode, info.error)
                 }
             }
         }

@@ -1,14 +1,12 @@
 package com.shuai.qiniulib.example.app
 
 import android.Manifest
-import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import com.shuai.qiniulib.QiNiuAuth
@@ -20,17 +18,24 @@ import com.shuai.qiniulib.lib.QiNiuUploadFileHandler
 import com.shuai.qiniulib.lib.QiNiuUploadTokenLoader
 import com.shuai.qiniulib.lib.QiNiuUploadTokenLoader.QiNiuUploadTokenResult
 import java.io.File
+import java.text.DecimalFormat
 import java.util.*
 
 class MainActivity : FragmentActivity(), View.OnClickListener {
 
-    private var mTest: Button? = null
-    private var mBtnStart1: Button? = null
-    private var mBtnCancel1: Button? = null
-    private var mTvUploadProgress1: TextView? = null
-    private var mBtnStart2: Button? = null
-    private var mBtnCancel2: Button? = null
-    private var mTvUploadProgress2: TextView? = null
+    private lateinit var mTest: Button
+
+    private lateinit var mBtnStart1: Button
+    private lateinit var mBtnCancel1: Button
+    private lateinit var mTvUploadProgress1: TextView
+
+    private lateinit var mBtnStart2: Button
+    private lateinit var mBtnCancel2: Button
+    private lateinit var mTvUploadProgress2: TextView
+
+    private var mUploader: QiNiuUploader? = null
+    private var mTask1: QiNiuUploadFileHandler? = null//上传任务1
+    private var mTask2: QiNiuUploadFileHandler? = null //上传任务2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,17 +47,20 @@ class MainActivity : FragmentActivity(), View.OnClickListener {
 
     private fun initView() {
         mTest = findViewById(R.id.btn_test)
-        mTest?.setOnClickListener(this)
+
         mBtnStart1 = findViewById(R.id.btn_start1)
         mBtnCancel1 = findViewById(R.id.btn_cancel1)
         mTvUploadProgress1 = findViewById(R.id.tv_upload_progress1)
-        mBtnStart1?.setOnClickListener(this)
-        mBtnCancel1?.setOnClickListener(this)
+
         mBtnStart2 = findViewById(R.id.btn_start2)
         mBtnCancel2 = findViewById(R.id.btn_cancel2)
         mTvUploadProgress2 = findViewById(R.id.tv_upload_progress2)
-        mBtnStart2?.setOnClickListener(this)
-        mBtnCancel2?.setOnClickListener(this)
+
+        mBtnStart1.setOnClickListener(this)
+        mBtnCancel1.setOnClickListener(this)
+        mTest.setOnClickListener(this)
+        mBtnStart2.setOnClickListener(this)
+        mBtnCancel2.setOnClickListener(this)
 
     }
 
@@ -61,10 +69,6 @@ class MainActivity : FragmentActivity(), View.OnClickListener {
         ActivityCompat.requestPermissions(this, arr, 100)
 
     }
-
-    private var mUploader: QiNiuUploader? = null
-    private var mTask1: QiNiuUploadFileHandler? = null//上传任务1
-    private var mTask2: QiNiuUploadFileHandler? = null //上传任务2
 
     private fun initData() {
 
@@ -87,13 +91,13 @@ class MainActivity : FragmentActivity(), View.OnClickListener {
                 Toast.makeText(this, "测试", Toast.LENGTH_SHORT).show()
             }
             R.id.btn_start1 -> {
-                mTask1 = uploadFile( /*"Android进阶之光.pdf"*/"testjpg.jpg", mTvUploadProgress1)
+                mTask1 = uploadFile( /*"Android进阶之光.pdf"*/"testjpg.jpg", mTvUploadProgress1 as TextView)
             }
             R.id.btn_cancel1 -> {
                 mTask1!!.cancel()
             }
             R.id.btn_start2 -> {
-                mTask2 = uploadFile("疯狂Java讲义第4版.pdf", mTvUploadProgress2)
+                mTask2 = uploadFile("疯狂Java讲义第4版.pdf", mTvUploadProgress2 as TextView)
             }
             R.id.btn_cancel2 -> {
                 mTask2!!.cancel()
@@ -108,7 +112,7 @@ class MainActivity : FragmentActivity(), View.OnClickListener {
      * @param tvUploadProgress
      * @return
      */
-    private fun uploadFile(fileName: String, tvUploadProgress: TextView?): QiNiuUploadFileHandler {
+    private fun uploadFile(fileName: String, tvUploadProgress: TextView): QiNiuUploadFileHandler {
         val dir = Environment.getExternalStorageDirectory().toString() + File.separator + fileName
         val f = File(dir)
 
@@ -119,16 +123,15 @@ class MainActivity : FragmentActivity(), View.OnClickListener {
     /**
      * 上传结果回调
      */
-    internal class MyQiNiuUploadCallback(tag: String, tvUploadProgress: TextView?) : QiNiuUploadCallback {
-        var tag = ""
-        var tvUploadProgress: TextView?
+    internal class MyQiNiuUploadCallback(private var tag: String, private var tvUploadProgress: TextView) : QiNiuUploadCallback {
+
         override fun onStart(key: String?) {
             QiNiuLog.d("[---$tag---]  onStart：,key=$key")
         }
 
-        override fun onProgress(key: String?, percent: Double) {
+        override fun onProgress(key: String?, percent: Double?) {
             QiNiuLog.d("[---$tag---]  onProgress：,key=$key,percent=$percent")
-            tvUploadProgress!!.text = percent.toString() + ""
+            tvUploadProgress.text = DecimalFormat("0.00").format(percent)
         }
 
         override fun onComplete(key: String?, info: String?) {
@@ -145,9 +148,5 @@ class MainActivity : FragmentActivity(), View.OnClickListener {
             QiNiuLog.e("[---$tag---]  onCancel：$key,error=$error")
         }
 
-        init {
-            this.tag = tag
-            this.tvUploadProgress = tvUploadProgress
-        }
     }
 }

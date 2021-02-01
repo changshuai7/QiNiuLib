@@ -24,7 +24,9 @@ class QiNiuUploadManager private constructor() {
             }
 
         @JvmStatic
-        val INSTANCE: UploadManager = UploadManager(FileRecorder(mBlockDirPath));
+        val INSTANCE: UploadManager by lazy {
+            UploadManager(FileRecorder(mBlockDirPath));
+        }
     }
 
 }
